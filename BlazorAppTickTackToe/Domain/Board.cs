@@ -10,6 +10,11 @@
         X, O
     }
 
+    public enum GameResult
+    {
+        WonX, WonO, NoWinner
+    }
+
     public class Board
     {
         public int ColumnCount => 3;
@@ -49,6 +54,48 @@
         {
             //Тернарный оператор
             CurrentGamer = CurrentGamer == Gamer.X ? Gamer.O : Gamer.X;
+        }
+
+        public GameResult GetGameResult()
+        {
+           
+            if (CheckWin(Gamer.X))
+            { 
+                return GameResult.WonX;
+            }
+            else if (CheckWin(Gamer.O))
+            {
+                return GameResult.WonO;
+            }
+            else
+            {
+                return GameResult.NoWinner;
+            }
+        }
+
+        private bool CheckWin(Gamer gamer)
+        {
+            CellState expectedCellState;
+
+            if (gamer == Gamer.X) 
+                expectedCellState = CellState.X;
+            else 
+                expectedCellState = CellState.O;
+
+            for (int row = 0; row < RowCount; row++)
+            {
+                var expectedCellsCount = 0;
+                for (int column = 0; column < ColumnCount; column++)
+                {
+                    if (Cells[row, column] == expectedCellState)
+                    {
+                        expectedCellsCount++;
+                    }
+                }
+                
+            }
+
+            return false;
         }
     }
 }
