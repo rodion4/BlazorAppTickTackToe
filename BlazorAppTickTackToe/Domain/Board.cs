@@ -12,7 +12,11 @@
 
     public enum GameResult
     {
-        WonX, WonO, NoWinner
+        WonX, 
+        WonO,
+        Unknown,
+        NoWinner,
+
     }
 
     public class Board
@@ -33,21 +37,25 @@
         /// </summary>
         public void NextTurn(int row, int column)
         {
-            if (Cells[row, column] == CellState.Blank)
+            var gameResult = GetGameResult(out _);
+            if (gameResult == GameResult.Unknown) 
             {
-                if (CurrentGamer == Gamer.X)
+                if (Cells[row, column] == CellState.Blank)
                 {
-                    Cells[row, column] = CellState.X;
-                    SwitchGamer();
+                    if (CurrentGamer == Gamer.X)
+                    {
+                        Cells[row, column] = CellState.X;
+                        SwitchGamer();
 
+                    }
+                    else
+                    {
+                        Cells[row, column] = CellState.O;
+                        CurrentGamer = Gamer.X;
+                    }
                 }
-                else
-                {
-                    Cells[row, column] = CellState.O;
-                    CurrentGamer = Gamer.X;
-                }
-
             }
+            
         }
 
         private void SwitchGamer()
@@ -56,24 +64,32 @@
             CurrentGamer = CurrentGamer == Gamer.X ? Gamer.O : Gamer.X;
         }
 
-        public GameResult GetGameResult()
+
+
+        public GameResult GetGameResult(out CellPosition[] winCells)
         {
            
-            if (CheckWin(Gamer.X))
+            if (CheckWin(Gamer.X, out winCells))
             { 
                 return GameResult.WonX;
             }
-            else if (CheckWin(Gamer.O))
+            else if (CheckWin(Gamer.O, out winCells))
             {
                 return GameResult.WonO;
             }
-            else
+           /* else if(CheckNoWinner())
             {
                 return GameResult.NoWinner;
+            }*/
+            else
+            {
+                return GameResult.Unknown;
             }
         }
 
-        private bool CheckWin(Gamer gamer)
+        
+
+        private bool CheckWin(Gamer gamer, out CellPosition[] winCells)
         {
             CellState expectedCellState;
 
@@ -94,12 +110,20 @@
                 }
                 if (expectedCellsCount == 3)
                 {
+                    winCells = new CellPosition[]
+                    {
+                        new CellPosition(Row: row, Column: 0),  
+                        new CellPosition(Row: row, Column: 1),
+                        new CellPosition(Row: row, Column: 2),
+                    };
                     return true;
                 }
 
             }
-
+            winCells = new CellPosition[0];
             return false;
         }
     }
+
+    public record CellPosition(int Row, int Column);
 }

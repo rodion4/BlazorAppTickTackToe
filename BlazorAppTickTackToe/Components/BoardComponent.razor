@@ -1,4 +1,5 @@
-﻿<div class="tictactoe-board">
+﻿<div>Победитель: @board.GetGameResult(out winCells)</div>
+<div class="tictactoe-board">
     @for(int column = 0; column < board.RowCount; column++)
     {
         <div class="tictactoe-column">
@@ -7,9 +8,12 @@
                 CellState cell = board.Cells[row, column];
                 var SavedRow = row;
                 var SavedColumn = column;
-                <div class="tictactoe-cell tictactoe-cell-@cell.ToString()" @onclick="() => 
+
+                var isWinCell = winCells.Contains(new CellPosition(row, column));
+                <div class="tictactoe-cell 
+                    tictactoe-cell-@cell.ToString()" @onclick="() => 
                     CellClick(SavedRow, SavedColumn)">
-                    r: @row col: @column
+                    <div style="font-size: 250%; color: green">@(isWinCell ? "✓" : "")</div>
                 </div>
             }
         </div>
@@ -17,9 +21,10 @@
 
 </div>
 
-<div>Победитель: @board.GetGameResult()</div>
+
 
 @code {
+    CellPosition[] winCells = new CellPosition[0];
     Board board = new Board();
 
     void CellClick(int row, int column)
